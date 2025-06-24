@@ -5,11 +5,24 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { ChatPage } from "@/pages/ChatPage";
 import { HistoryPage } from "@/pages/HistoryPage";
 import { ConversationPage } from "@/pages/ConversationPage";
+
+import { Button, Cursor, List, TaskBar } from '@react95/core';
+import { ReaderClosed, WindowsExplorer } from '@react95/icons';
+
+import './App.css';
+
+import '@react95/core/GlobalStyle';
+import '@react95/core/themes/win95.css';
+
 import NotFound from "./pages/NotFound";
+
 
 const queryClient = new QueryClient();
 
+
+
 const App = () => (
+
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
       <Routes>

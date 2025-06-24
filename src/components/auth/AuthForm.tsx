@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Window, WindowHeader, WindowContent, Button, TextInput, Panel, Fieldset } from 'react95';
+import {  Button, Fieldset } from '@react95/core';
 import { useAuth } from '@/hooks/useAuth';
 
 export const AuthForm = () => {
