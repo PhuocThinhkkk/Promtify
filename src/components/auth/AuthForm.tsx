@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Button, Fieldset, Window, WindowHeader, WindowContent, TextInput, Panel } from '@react95/core';
+import { Button, Fieldset, Frame, TitleBar, Input } from '@react95/core';
 import { useAuth } from '@/hooks/useAuth';
 
 export const AuthForm = () => {
@@ -54,11 +54,11 @@ export const AuthForm = () => {
         fontFamily: 'MS Sans Serif, sans-serif'
       }}
     >
-      <Window className="w-full max-w-md">
-        <WindowHeader className="flex items-center justify-between">
-          <span>🔐 {isLogin ? 'Login' : 'Sign Up'} - Lovable AI v1.0</span>
-        </WindowHeader>
-        <WindowContent>
+      <Frame className="w-full max-w-md">
+        <TitleBar>
+          🔐 {isLogin ? 'Login' : 'Sign Up'} - Lovable AI v1.0
+        </TitleBar>
+        <div className="p-4">
           <div className="text-center mb-4">
             <div className="text-6xl mb-2">🖥️</div>
             <h2 className="text-lg font-bold">
@@ -74,7 +74,7 @@ export const AuthForm = () => {
               {!isLogin && (
                 <div className="mb-3">
                   <label className="block text-sm font-bold mb-1">Full Name:</label>
-                  <TextInput
+                  <Input
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="Enter your full name"
@@ -85,7 +85,7 @@ export const AuthForm = () => {
               )}
               <div className="mb-3">
                 <label className="block text-sm font-bold mb-1">Email:</label>
-                <TextInput
+                <Input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -96,7 +96,7 @@ export const AuthForm = () => {
               </div>
               <div className="mb-3">
                 <label className="block text-sm font-bold mb-1">Password:</label>
-                <TextInput
+                <Input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -112,7 +112,7 @@ export const AuthForm = () => {
                 {loading ? '⏳ Processing...' : (isLogin ? '🚪 Sign In' : '📝 Sign Up')}
               </Button>
               
-              <Panel variant="well" className="p-2">
+              <Frame className="p-2">
                 <div className="text-center text-xs text-gray-600 mb-2">- OR -</div>
                 <Button
                   type="button"
@@ -122,20 +122,19 @@ export const AuthForm = () => {
                 >
                   🌐 Continue with Google
                 </Button>
-              </Panel>
+              </Frame>
               
               <Button
                 type="button"
                 onClick={() => setIsLogin(!isLogin)}
                 className="w-full"
-                variant="flat"
               >
                 {isLogin ? "🆕 Don't have an account? Sign up" : "🔄 Already have an account? Sign in"}
               </Button>
             </div>
           </form>
-        </WindowContent>
-      </Window>
+        </div>
+      </Frame>
     </div>
   );
 };

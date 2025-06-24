@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from 'react';
-import { Window, WindowHeader, WindowContent, Button, Panel, Fieldset } from '@react95/core';
+import { Frame, TitleBar, Button, Fieldset } from '@react95/core';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -76,15 +76,15 @@ export const ConversationList = () => {
   if (loading) {
     return (
       <div className="container mx-auto p-4">
-        <Window className="w-full">
-          <WindowHeader>🔄 Loading Conversations...</WindowHeader>
-          <WindowContent className="p-4">
+        <Frame className="w-full">
+          <TitleBar>🔄 Loading Conversations...</TitleBar>
+          <div className="p-4">
             <div className="text-center">
               <div className="text-4xl mb-4">⏳</div>
               <p>Please wait while we load your conversation history...</p>
             </div>
-          </WindowContent>
-        </Window>
+          </div>
+        </Frame>
       </div>
     );
   }
@@ -92,9 +92,9 @@ export const ConversationList = () => {
   if (conversations.length === 0) {
     return (
       <div className="container mx-auto p-4">
-        <Window className="w-full">
-          <WindowHeader>📂 Conversation History - Empty</WindowHeader>
-          <WindowContent className="p-4">
+        <Frame className="w-full">
+          <TitleBar>📂 Conversation History - Empty</TitleBar>
+          <div className="p-4">
             <div className="text-center py-8">
               <div className="text-6xl mb-4">📁</div>
               <h3 className="text-lg font-bold mb-2">No conversations yet</h3>
@@ -103,20 +103,20 @@ export const ConversationList = () => {
                 💬 Start Chatting
               </Button>
             </div>
-          </WindowContent>
-        </Window>
+          </div>
+        </Frame>
       </div>
     );
   }
 
   return (
     <div className="container mx-auto p-4">
-      <Window className="w-full">
-        <WindowHeader>📋 Conversation History ({conversations.length} conversations)</WindowHeader>
-        <WindowContent className="p-4">
+      <Frame className="w-full">
+        <TitleBar>📋 Conversation History ({conversations.length} conversations)</TitleBar>
+        <div className="p-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {conversations.map((conversation) => (
-              <Panel key={conversation.id} variant="well" className="p-3">
+              <div key={conversation.id} className="p-3 border-2 border-gray-300 bg-gray-100">
                 <Fieldset legend={`💬 ${conversation.title}`}>
                   <div className="space-y-2">
                     <div className="flex items-center text-xs text-gray-600">
@@ -135,28 +135,25 @@ export const ConversationList = () => {
                     <div className="flex items-center justify-between pt-2">
                       <div className="flex space-x-1">
                         {conversation.tags.slice(0, 2).map((tag, index) => (
-                          <Panel key={index} variant="well" className="px-2 py-1">
+                          <div key={index} className="px-2 py-1 bg-white border border-gray-300">
                             <span className="text-xs">#{tag}</span>
-                          </Panel>
+                          </div>
                         ))}
                         {conversation.tags.length > 2 && (
-                          <Panel variant="well" className="px-2 py-1">
+                          <div className="px-2 py-1 bg-white border border-gray-300">
                             <span className="text-xs">+{conversation.tags.length - 2}</span>
-                          </Panel>
+                          </div>
                         )}
                       </div>
                       
                       <div className="flex space-x-1">
                         <Button
-                          size="sm"
                           onClick={() => openConversation(conversation.id)}
                         >
                           📖 Open
                         </Button>
                         <Button
-                          size="sm"
                           onClick={() => deleteConversation(conversation.id)}
-                          variant="flat"
                         >
                           🗑️
                         </Button>
@@ -164,11 +161,11 @@ export const ConversationList = () => {
                     </div>
                   </div>
                 </Fieldset>
-              </Panel>
+              </div>
             ))}
           </div>
-        </WindowContent>
-      </Window>
+        </div>
+      </Frame>
     </div>
   );
 };

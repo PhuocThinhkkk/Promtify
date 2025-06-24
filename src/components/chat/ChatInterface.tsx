@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useRef } from 'react';
-import { Window, WindowHeader, WindowContent, Button, TextInput, Panel } from '@react95/core';
+import { Frame, TitleBar, Button, Input } from '@react95/core';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -178,15 +178,12 @@ export const ChatInterface = ({ conversationId }: ChatInterfaceProps) => {
   };
 
   return (
-    <Window className="w-full h-full">
-      <WindowHeader className="flex items-center justify-between">
-        <span>💬 Lovable AI Chat v1.0</span>
-      </WindowHeader>
-      <WindowContent className="flex flex-col h-full">
+    <Frame className="w-full h-full">
+      <TitleBar>💬 Lovable AI Chat v1.0</TitleBar>
+      <div className="flex flex-col h-full p-2">
         {/* Messages */}
-        <Panel 
-          variant="well" 
-          className="flex-1 overflow-y-auto p-2 mb-2 bg-white"
+        <div 
+          className="flex-1 overflow-y-auto p-2 mb-2 bg-white border-2 border-gray-300"
           style={{ minHeight: '400px' }}
         >
           {messages.length === 0 ? (
@@ -199,9 +196,8 @@ export const ChatInterface = ({ conversationId }: ChatInterfaceProps) => {
             <div className="space-y-3">
               {messages.map((message) => (
                 <div key={message.id} className="mb-4">
-                  <Panel 
-                    variant="well"
-                    className={`p-3 ${message.role === 'user' ? 'ml-8 bg-blue-50' : 'mr-8 bg-gray-50'}`}
+                  <div 
+                    className={`p-3 border-2 border-gray-300 ${message.role === 'user' ? 'ml-8 bg-blue-50' : 'mr-8 bg-gray-50'}`}
                   >
                     <div className="flex items-start space-x-2">
                       <span className="font-bold text-sm">
@@ -211,19 +207,19 @@ export const ChatInterface = ({ conversationId }: ChatInterfaceProps) => {
                     <div className="mt-1 whitespace-pre-wrap font-mono text-sm">
                       {message.content}
                     </div>
-                  </Panel>
+                  </div>
                 </div>
               ))}
               <div ref={messagesEndRef} />
             </div>
           )}
-        </Panel>
+        </div>
 
         <div className="w-full h-px bg-gray-400 my-2"></div>
 
         {/* Input */}
         <div className="flex items-center space-x-2 mt-2">
-          <TextInput
+          <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={handleKeyPress}
@@ -240,7 +236,7 @@ export const ChatInterface = ({ conversationId }: ChatInterfaceProps) => {
             {loading ? '⏳ Wait...' : '📤 Send'}
           </Button>
         </div>
-      </WindowContent>
-    </Window>
+      </div>
+    </Frame>
   );
 };

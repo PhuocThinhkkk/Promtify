@@ -1,7 +1,7 @@
 
 import { useAuth } from '@/hooks/useAuth';
 import { AuthForm } from '@/components/auth/AuthForm';
-import { Window, WindowHeader, WindowContent } from '@react95/core';
+import { Frame, TitleBar } from '@react95/core';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -19,13 +19,13 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
           fontFamily: 'MS Sans Serif, sans-serif'
         }}
       >
-        <Window>
-          <WindowHeader>🔄 Loading System...</WindowHeader>
-          <WindowContent className="p-8 text-center">
+        <Frame className="p-4">
+          <TitleBar>🔄 Loading System...</TitleBar>
+          <div className="p-8 text-center">
             <div className="text-4xl mb-4">⏳</div>
             <p>Initializing Lovable AI...</p>
-          </WindowContent>
-        </Window>
+          </div>
+        </Frame>
       </div>
     );
   }

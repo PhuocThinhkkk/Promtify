@@ -1,5 +1,5 @@
 
-import { Button, Panel } from '@react95/core';
+import { Button } from '@react95/core';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -14,8 +14,7 @@ export const Header = () => {
   };
 
   return (
-    <Panel 
-      variant="well" 
+    <div 
       className="border-b shadow-sm"
       style={{ 
         background: 'linear-gradient(90deg, #c0c0c0, #d4d0c8)',
@@ -35,17 +34,15 @@ export const Header = () => {
           
           <nav className="flex space-x-2">
             <Button
-              variant={location.pathname === '/chat' ? 'default' : 'flat'}
               onClick={() => navigate('/chat')}
-              className="flex items-center space-x-1"
+              className={`flex items-center space-x-1 ${location.pathname === '/chat' ? 'bg-gray-300' : ''}`}
             >
               <span>💬</span>
               <span>Chat</span>
             </Button>
             <Button
-              variant={location.pathname === '/history' ? 'default' : 'flat'}
               onClick={() => navigate('/history')}
-              className="flex items-center space-x-1"
+              className={`flex items-center space-x-1 ${location.pathname === '/history' ? 'bg-gray-300' : ''}`}
             >
               <span>📋</span>
               <span>History</span>
@@ -54,15 +51,15 @@ export const Header = () => {
         </div>
         
         <div className="flex items-center space-x-3">
-          <Panel variant="well" className="px-2 py-1">
+          <div className="px-2 py-1 bg-gray-200 border border-gray-400">
             <div className="flex items-center space-x-2">
               <span className="text-sm">👤</span>
               <span className="text-sm font-mono">
                 {user?.email?.charAt(0).toUpperCase()}{user?.email?.slice(1, 8)}...
               </span>
             </div>
-          </Panel>
-          <Button onClick={handleSignOut} variant="flat">
+          </div>
+          <Button onClick={handleSignOut}>
             <span className="flex items-center space-x-1">
               <span>🚪</span>
               <span>Exit</span>
@@ -70,6 +67,6 @@ export const Header = () => {
           </Button>
         </div>
       </div>
-    </Panel>
+    </div>
   );
 };
