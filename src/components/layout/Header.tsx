@@ -15,7 +15,7 @@ export const Header = () => {
 
   return (
     <Panel 
-      variant="raised" 
+      variant="well" 
       className="border-b shadow-sm"
       style={{ 
         background: 'linear-gradient(90deg, #c0c0c0, #d4d0c8)',

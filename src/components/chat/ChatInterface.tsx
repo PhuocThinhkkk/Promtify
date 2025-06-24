@@ -200,7 +200,7 @@ export const ChatInterface = ({ conversationId }: ChatInterfaceProps) => {
               {messages.map((message) => (
                 <div key={message.id} className="mb-4">
                   <Panel 
-                    variant={message.role === 'user' ? 'raised' : 'well'}
+                    variant={message.role === 'user' ? 'well' : 'well'}
                     className={`p-3 ${message.role === 'user' ? 'ml-8 bg-blue-50' : 'mr-8 bg-gray-50'}`}
                   >
                     <div className="flex items-start space-x-2">

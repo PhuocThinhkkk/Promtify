@@ -116,7 +116,7 @@ export const ConversationList = () => {
         <WindowContent className="p-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {conversations.map((conversation) => (
-              <Panel key={conversation.id} variant="raised" className="p-3">
+              <Panel key={conversation.id} variant="well" className="p-3">
                 <Fieldset label={`💬 ${conversation.title}`}>
                   <div className="space-y-2">
                     <div className="flex items-center text-xs text-gray-600">
