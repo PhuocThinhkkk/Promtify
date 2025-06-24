@@ -47,8 +47,22 @@ body {
   51%, 100% { opacity: 0; }
 }
 
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes glow {
+  0%, 100% { text-shadow: 4px 4px 0px #c0c0c0, 8px 8px 0px #808080, 12px 12px 0px #404040, 16px 16px 20px rgba(0,0,0,0.3); }
+  50% { text-shadow: 4px 4px 0px #e0e0e0, 8px 8px 0px #a0a0a0, 12px 12px 0px #606060, 16px 16px 30px rgba(0,0,0,0.5); }
+}
+
 .cursor-blink {
-  animation: blink 1s infinite;
+  animation: blink 1s infinite, glow 3s ease-in-out infinite;
+}
+
+.float-animation {
+  animation: float 6s ease-in-out infinite;
 }
 
 /* Custom window styling */
@@ -58,4 +72,22 @@ body {
     inset 1px 1px #dfdfdf,
     inset -2px -2px #808080,
     inset 2px 2px #c0c0c0;
+  transition: transform 0.2s ease;
+}
+
+.window-95:hover {
+  transform: translateY(-2px);
+}
+
+/* Enhanced retro button styling */
+button {
+  transition: all 0.1s ease !important;
+}
+
+button:hover {
+  transform: translateY(-1px) !important;
+}
+
+button:active {
+  transform: translateY(1px) !important;
 }
