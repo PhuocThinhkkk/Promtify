@@ -1,5 +1,5 @@
 
-import { Button, Panel, Separator } from 'react95';
+import { Button, Panel } from '@react95/core';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -31,7 +31,7 @@ export const Header = () => {
             </h1>
           </div>
           
-          <Separator orientation="vertical" />
+          <div className="w-px h-6 bg-gray-400"></div>
           
           <nav className="flex space-x-2">
             <Button

@@ -1,7 +1,7 @@
 
 import { useAuth } from '@/hooks/useAuth';
 import { AuthForm } from '@/components/auth/AuthForm';
-import { Window, WindowHeader, WindowContent } from 'react95';
+import { Window, WindowHeader, WindowContent } from '@react95/core';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;

@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import {  Button, Fieldset } from '@react95/core';
+import { Button, Fieldset, Window, WindowHeader, WindowContent, TextInput, Panel } from '@react95/core';
 import { useAuth } from '@/hooks/useAuth';
 
 export const AuthForm = () => {
@@ -70,7 +70,7 @@ export const AuthForm = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <Fieldset label="User Information">
+            <Fieldset legend="User Information">
               {!isLogin && (
                 <div className="mb-3">
                   <label className="block text-sm font-bold mb-1">Full Name:</label>

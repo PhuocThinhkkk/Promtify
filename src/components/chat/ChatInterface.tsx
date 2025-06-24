@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useRef } from 'react';
-import { Window, WindowHeader, WindowContent, Button, TextInput, Panel, Separator } from 'react95';
+import { Window, WindowHeader, WindowContent, Button, TextInput, Panel } from '@react95/core';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -200,7 +200,7 @@ export const ChatInterface = ({ conversationId }: ChatInterfaceProps) => {
               {messages.map((message) => (
                 <div key={message.id} className="mb-4">
                   <Panel 
-                    variant={message.role === 'user' ? 'well' : 'well'}
+                    variant="well"
                     className={`p-3 ${message.role === 'user' ? 'ml-8 bg-blue-50' : 'mr-8 bg-gray-50'}`}
                   >
                     <div className="flex items-start space-x-2">
@@ -219,7 +219,7 @@ export const ChatInterface = ({ conversationId }: ChatInterfaceProps) => {
           )}
         </Panel>
 
-        <Separator />
+        <div className="w-full h-px bg-gray-400 my-2"></div>
 
         {/* Input */}
         <div className="flex items-center space-x-2 mt-2">

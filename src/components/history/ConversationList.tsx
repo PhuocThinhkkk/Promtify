@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from 'react';
-import { Window, WindowHeader, WindowContent, Button, Panel, Fieldset } from 'react95';
+import { Window, WindowHeader, WindowContent, Button, Panel, Fieldset } from '@react95/core';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -117,7 +117,7 @@ export const ConversationList = () => {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {conversations.map((conversation) => (
               <Panel key={conversation.id} variant="well" className="p-3">
-                <Fieldset label={`💬 ${conversation.title}`}>
+                <Fieldset legend={`💬 ${conversation.title}`}>
                   <div className="space-y-2">
                     <div className="flex items-center text-xs text-gray-600">
                       <span>🕒</span>
