@@ -4,17 +4,15 @@ import { ConversationList } from '@/components/history/ConversationList';
 
 export const HistoryPage = () => {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div 
+      className="min-h-screen"
+      style={{ 
+        background: 'linear-gradient(45deg, #008080, #20b2aa)',
+        fontFamily: 'MS Sans Serif, sans-serif'
+      }}
+    >
       <Header />
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Conversation History</h1>
-          <p className="text-gray-600 mt-2">
-            View and manage your past conversations with the AI assistant
-          </p>
-        </div>
-        <ConversationList />
-      </div>
+      <ConversationList />
     </div>
   );
 };

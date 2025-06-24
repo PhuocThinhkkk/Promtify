@@ -1,22 +1,19 @@
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { ThemeProvider } from 'react95';
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { ChatPage } from "@/pages/ChatPage";
 import { HistoryPage } from "@/pages/HistoryPage";
 import { ConversationPage } from "@/pages/ConversationPage";
 import NotFound from "./pages/NotFound";
+import original from 'react95/dist/themes/original';
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
+    <ThemeProvider theme={original}>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Navigate to="/chat" replace />} />
@@ -38,7 +35,7 @@ const App = () => (
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
-    </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 
