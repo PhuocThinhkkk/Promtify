@@ -26,7 +26,7 @@ export const Header = () => {
           <div className="flex items-center space-x-2">
             <span className="text-2xl">🖥️</span>
             <h1 className="text-lg font-bold" style={{ fontFamily: 'MS Sans Serif, sans-serif' }}>
-              Lovable AI v1.0
+              Promtify v1.0
             </h1>
           </div>
           

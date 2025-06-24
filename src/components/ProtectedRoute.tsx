@@ -23,7 +23,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
           <TitleBar>🔄 Loading System...</TitleBar>
           <div className="p-8 text-center">
             <div className="text-4xl mb-4">⏳</div>
-            <p>Initializing Lovable AI...</p>
+            <p>Initializing ...</p>
           </div>
         </Frame>
       </div>

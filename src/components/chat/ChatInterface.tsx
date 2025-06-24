@@ -179,7 +179,7 @@ export const ChatInterface = ({ conversationId }: ChatInterfaceProps) => {
 
   return (
     <Frame className="w-full h-full">
-      <TitleBar>💬 Lovable AI Chat v1.0</TitleBar>
+      <TitleBar></TitleBar>
       <div className="flex flex-col h-full p-2">
         {/* Messages */}
         <div 
@@ -189,8 +189,8 @@ export const ChatInterface = ({ conversationId }: ChatInterfaceProps) => {
           {messages.length === 0 ? (
             <div className="text-center p-8">
               <div className="text-4xl mb-4">🖥️</div>
-              <p className="text-gray-600">Welcome to Lovable AI Chat!</p>
-              <p className="text-gray-500 text-sm">Start typing to begin your conversation...</p>
+              <p className="text-gray-600">Welcome to Promtify Chat!</p>
+              <p className="text-gray-500 text-sm">Start typing to turn you into a Prompt Engineer </p>
             </div>
           ) : (
             <div className="space-y-3">

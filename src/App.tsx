@@ -7,6 +7,7 @@ import { ChatPage } from "@/pages/ChatPage";
 import { HistoryPage } from "@/pages/HistoryPage";
 import { ConversationPage } from "@/pages/ConversationPage";
 import NotFound from "./pages/NotFound";
+import { AlertProvider } from "./hooks/useAlert";
 
 import './App.css';
 
@@ -17,6 +18,7 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <AlertProvider>
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
@@ -38,6 +40,7 @@ const App = () => (
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
+    </AlertProvider>
   </QueryClientProvider>
 );
 

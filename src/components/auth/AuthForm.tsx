@@ -1,7 +1,8 @@
 
 import { useState } from 'react';
-import { Button, Fieldset, Frame, TitleBar, Input } from '@react95/core';
+import { Button, Fieldset, Frame, TitleBar, Input,  } from '@react95/core';
 import { useAuth } from '@/hooks/useAuth';
+import { useAlert } from '@/hooks/useAlert';
 
 export const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -10,7 +11,7 @@ export const AuthForm = () => {
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
   const { signIn, signUp, signInWithGoogle } = useAuth();
-
+  const alertHook = useAlert()
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -21,12 +22,28 @@ export const AuthForm = () => {
         : await signUp(email, password, fullName);
 
       if (error) {
-        alert(`Error: ${error.message}`);
+        alertHook.showAlert({
+          type: 'error',
+          title: 'Hey there!',
+          message: `${error.message}`,
+          hasSound: true
+        });
       } else if (!isLogin) {
-        alert('Success! Check your email for the confirmation link!');
+        alertHook.showAlert({
+          type: 'info',
+          title: 'Hey there!',
+          message: `Success! Check your email for the confirmation link!`,
+          hasSound: true
+        });
       }
     } catch (error) {
-      alert('Something went wrong. Please try again.');
+      alertHook.showAlert({
+          type: 'error',
+          title: 'Hey there!',
+          message: `Something went wrong. Please try again.`,
+          hasSound: true
+        });
+    
     } finally {
       setLoading(false);
     }
@@ -37,10 +54,20 @@ export const AuthForm = () => {
     try {
       const { error } = await signInWithGoogle();
       if (error) {
-        alert(`Error: ${error.message}`);
+        alertHook.showAlert({
+        type: 'error',
+        title: 'Hey there!',
+        message: `${error.message}`,
+        hasSound: true
+      });
       }
     } catch (error) {
-      alert('Something went wrong. Please try again.');
+      alertHook.showAlert({
+        type: 'error',
+        title: 'Hey there!',
+        message: `Something went wrong. Please try again.`,
+        hasSound: true
+      });
     } finally {
       setLoading(false);
     }
@@ -54,9 +81,9 @@ export const AuthForm = () => {
         fontFamily: 'MS Sans Serif, sans-serif'
       }}
     >
-      <Frame className="w-full max-w-md">
+      <Frame className=" window-95  bg-gray-200 w-full max-w-md">
         <TitleBar>
-          🔐 {isLogin ? 'Login' : 'Sign Up'} - Lovable AI v1.0
+          🔐 {isLogin ? 'Login' : 'Sign Up'} 
         </TitleBar>
         <div className="p-4">
           <div className="text-center mb-4">
