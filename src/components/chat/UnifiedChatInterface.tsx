@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
+import { PromptEnhancer } from './PromptEnhancer';
 
 interface Message {
   id: string;
@@ -32,6 +33,7 @@ export const UnifiedChatInterface = ({ conversationId }: UnifiedChatInterfacePro
   const [loading, setLoading] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
   const [selectedConversationId, setSelectedConversationId] = useState(conversationId);
+  const [showEnhancer, setShowEnhancer] = useState(false);
   const { user } = useAuth();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -246,6 +248,11 @@ export const UnifiedChatInterface = ({ conversationId }: UnifiedChatInterfacePro
     }
   };
 
+  const handleEnhancedPrompt = (enhancedPrompt: string) => {
+    setInput(enhancedPrompt);
+    setShowEnhancer(false);
+  };
+
   return (
     <div className="h-full flex gap-4">
       {/* Left Sidebar - History */}
@@ -257,9 +264,18 @@ export const UnifiedChatInterface = ({ conversationId }: UnifiedChatInterfacePro
                 <span>📚</span>
                 <span>Chat History</span>
               </div>
-              <Button onClick={startNewChat} className="text-xs">
-                ➕ New
-              </Button>
+              <div className="flex space-x-1">
+                <Button 
+                  onClick={() => setShowEnhancer(!showEnhancer)} 
+                  className="text-xs"
+                  style={{ backgroundColor: showEnhancer ? '#ffeb3b' : undefined }}
+                >
+                  🧠 Fix
+                </Button>
+                <Button onClick={startNewChat} className="text-xs">
+                  ➕ New
+                </Button>
+              </div>
             </div>
           </TitleBar>
           
@@ -332,6 +348,13 @@ export const UnifiedChatInterface = ({ conversationId }: UnifiedChatInterfacePro
 
       {/* Right Side - Chat Area */}
       <div className="flex-1 flex flex-col gap-4">
+        {/* Prompt Enhancer (conditionally shown) */}
+        {showEnhancer && (
+          <div className="h-80">
+            <PromptEnhancer onEnhancedPrompt={handleEnhancedPrompt} />
+          </div>
+        )}
+
         {/* Top Right - AI Response Area */}
         <Frame className="flex-1">
           <TitleBar>
@@ -350,7 +373,10 @@ export const UnifiedChatInterface = ({ conversationId }: UnifiedChatInterfacePro
               <div className="text-center p-8">
                 <div className="text-6xl mb-4">🖥️</div>
                 <h3 className="text-xl font-bold mb-2">Welcome to Promptify Chat!</h3>
-                <p className="text-gray-600">Start typing below to begin your conversation</p>
+                <p className="text-gray-600 mb-4">Start typing below to begin your conversation</p>
+                <div className="text-sm text-gray-500 bg-yellow-50 p-3 border-2 border-yellow-300 rounded">
+                  💡 <strong>Pro Tip:</strong> Click the "🧠 Fix" button to enhance your prompts before sending!
+                </div>
               </div>
             ) : (
               <div className="space-y-4">
@@ -404,7 +430,7 @@ export const UnifiedChatInterface = ({ conversationId }: UnifiedChatInterfacePro
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Type your message here..."
+                  placeholder="Type your message here... (or use the enhancer above!)"
                   disabled={loading}
                   className="flex-1"
                   style={{ fontFamily: 'monospace' }}
