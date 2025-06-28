@@ -24,12 +24,12 @@ serve(async (req) => {
       )
     }
 
-    // Using OpenAI API to enhance the prompt
-    const openaiApiKey = Deno.env.get('OPENAI_API_KEY')
+    // Using Google Gemini API to enhance the prompt
+    const geminiApiKey = Deno.env.get('GEMINI_API_KEY')
     
-    if (!openaiApiKey) {
+    if (!geminiApiKey) {
       return new Response(
-        JSON.stringify({ error: 'OpenAI API key not configured' }),
+        JSON.stringify({ error: 'Gemini API key not configured' }),
         { 
           status: 500, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -49,36 +49,53 @@ Guidelines for enhancement:
 7. Add specific requirements or constraints if helpful
 8. Make it more detailed and comprehensive
 
-Return ONLY the enhanced prompt, nothing else. Do not add explanations or meta-commentary.`
+Return ONLY the enhanced prompt, nothing else. Do not add explanations or meta-commentary.
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+Original prompt to enhance: "${prompt}"`
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${geminiApiKey}`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openaiApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
-        messages: [
+        contents: [{
+          parts: [{
+            text: systemPrompt
+          }]
+        }],
+        generationConfig: {
+          temperature: 0.7,
+          topK: 40,
+          topP: 0.95,
+          maxOutputTokens: 1024,
+        },
+        safetySettings: [
           {
-            role: 'system',
-            content: systemPrompt
+            category: "HARM_CATEGORY_HARASSMENT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
           },
           {
-            role: 'user',
-            content: `Please enhance this prompt: "${prompt}"`
+            category: "HARM_CATEGORY_HATE_SPEECH",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          },
+          {
+            category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          },
+          {
+            category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
           }
-        ],
-        max_tokens: 500,
-        temperature: 0.7,
+        ]
       }),
     })
 
     if (!response.ok) {
       const errorData = await response.text()
-      console.error('OpenAI API error:', errorData)
+      console.error('Gemini API error:', errorData)
       return new Response(
-        JSON.stringify({ error: 'Failed to enhance prompt' }),
+        JSON.stringify({ error: 'Failed to enhance prompt with Gemini' }),
         { 
           status: 500, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -87,11 +104,12 @@ Return ONLY the enhanced prompt, nothing else. Do not add explanations or meta-c
     }
 
     const data = await response.json()
-    const enhancedPrompt = data.choices[0]?.message?.content?.trim()
+    const enhancedPrompt = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim()
 
     if (!enhancedPrompt) {
+      console.error('No enhanced prompt received from Gemini:', data)
       return new Response(
-        JSON.stringify({ error: 'No enhanced prompt received' }),
+        JSON.stringify({ error: 'No enhanced prompt received from Gemini' }),
         { 
           status: 500, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -103,7 +121,8 @@ Return ONLY the enhanced prompt, nothing else. Do not add explanations or meta-c
       JSON.stringify({ 
         original_prompt: prompt,
         enhanced_prompt: enhancedPrompt,
-        enhancement_timestamp: new Date().toISOString()
+        enhancement_timestamp: new Date().toISOString(),
+        provider: 'Google Gemini 1.5 Flash'
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
