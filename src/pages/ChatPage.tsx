@@ -1,6 +1,5 @@
-
 import { Header } from '@/components/layout/Header';
-import { ChatInterface } from '@/components/chat/ChatInterface';
+import { UnifiedChatInterface } from '@/components/chat/UnifiedChatInterface';
 
 export const ChatPage = () => {
   return (
@@ -13,7 +12,7 @@ export const ChatPage = () => {
     >
       <Header />
       <div className="flex-1 p-4">
-        <ChatInterface />
+        <UnifiedChatInterface />
       </div>
     </div>
   );

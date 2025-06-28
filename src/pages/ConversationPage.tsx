@@ -1,7 +1,6 @@
-
 import { useParams } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
-import { ChatInterface } from '@/components/chat/ChatInterface';
+import { UnifiedChatInterface } from '@/components/chat/UnifiedChatInterface';
 
 export const ConversationPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -16,7 +15,7 @@ export const ConversationPage = () => {
     >
       <Header />
       <div className="flex-1 p-4">
-        <ChatInterface conversationId={id} />
+        <UnifiedChatInterface conversationId={id} />
       </div>
     </div>
   );

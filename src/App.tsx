@@ -1,10 +1,8 @@
-
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { HomePage } from "@/components/home/HomePage";
 import { ChatPage } from "@/pages/ChatPage";
-import { HistoryPage } from "@/pages/HistoryPage";
 import { ConversationPage } from "@/pages/ConversationPage";
 import NotFound from "./pages/NotFound";
 import { AlertProvider } from "./hooks/useAlert";
@@ -29,7 +27,7 @@ const App = () => (
         } />
         <Route path="/history" element={
           <ProtectedRoute>
-            <HistoryPage />
+            <ChatPage />
           </ProtectedRoute>
         } />
         <Route path="/conversation/:id" element={
