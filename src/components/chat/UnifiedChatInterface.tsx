@@ -37,63 +37,103 @@ export const UnifiedChatInterface = ({ conversationId }: UnifiedChatInterfacePro
   }, [user]);
 
   const loadEnhancements = async () => {
-    if (!user) return;
+    if (!user) {
+      setLoadingHistory(false);
+      return;
+    }
 
     setLoadingHistory(true);
     try {
+      console.log('Loading enhancements for user:', user.id);
+      
       const { data, error } = await supabase
         .from('prompt_enhancements')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
+      console.log('Supabase response:', { data, error });
+
       if (error) {
-        console.error('Error loading enhancements:', error);
+        console.error('Supabase error loading enhancements:', error);
         alertHook.showAlert({
           type: 'error',
           title: 'Database Error',
-          message: 'Could not load enhancement history. Please try again.',
+          message: `Could not load enhancement history: ${error.message}`,
           hasSound: true
         });
+        setEnhancements([]);
       } else {
+        console.log('Successfully loaded enhancements:', data);
         setEnhancements(data || []);
       }
     } catch (err) {
-      console.error('Error loading enhancements:', err);
+      console.error('Unexpected error loading enhancements:', err);
+      alertHook.showAlert({
+        type: 'error',
+        title: 'Error',
+        message: 'Unexpected error loading history. Please try again.',
+        hasSound: true
+      });
+      setEnhancements([]);
     } finally {
       setLoadingHistory(false);
     }
   };
 
   const saveEnhancement = async (original: string, enhanced: string, provider: string) => {
-    if (!user) return;
+    if (!user) {
+      console.error('No user found when trying to save enhancement');
+      return;
+    }
 
     try {
+      console.log('Saving enhancement for user:', user.id);
+      
+      const enhancementData = {
+        user_id: user.id,
+        original_prompt: original,
+        enhanced_prompt: enhanced,
+        provider: provider
+      };
+
+      console.log('Enhancement data to save:', enhancementData);
+
       const { data, error } = await supabase
         .from('prompt_enhancements')
-        .insert({
-          user_id: user.id,
-          original_prompt: original,
-          enhanced_prompt: enhanced,
-          provider: provider
-        })
+        .insert(enhancementData)
         .select()
         .single();
 
+      console.log('Save response:', { data, error });
+
       if (error) {
-        console.error('Error saving enhancement:', error);
+        console.error('Supabase error saving enhancement:', error);
         alertHook.showAlert({
           type: 'error',
           title: 'Save Error',
-          message: 'Could not save enhancement to history.',
+          message: `Could not save enhancement: ${error.message}`,
           hasSound: true
         });
       } else {
-        // Add to local state
+        console.log('Successfully saved enhancement:', data);
+        // Add to local state immediately
         setEnhancements(prev => [data, ...prev]);
+        alertHook.showAlert({
+          type: 'info',
+          title: 'Saved!',
+          message: 'Enhancement saved to history.',
+          hasSound: true
+        });
       }
     } catch (err) {
-      console.error('Error saving enhancement:', err);
+      console.error('Unexpected error saving enhancement:', err);
+      alertHook.showAlert({
+        type: 'error',
+        title: 'Error',
+        message: 'Unexpected error saving enhancement.',
+        hasSound: true
+      });
     }
   };
 
@@ -161,6 +201,8 @@ export const UnifiedChatInterface = ({ conversationId }: UnifiedChatInterfacePro
     if (!user) return;
     
     try {
+      console.log('Deleting enhancement:', id);
+      
       const { error } = await supabase
         .from('prompt_enhancements')
         .delete()
@@ -172,10 +214,11 @@ export const UnifiedChatInterface = ({ conversationId }: UnifiedChatInterfacePro
         alertHook.showAlert({
           type: 'error',
           title: 'Delete Error',
-          message: 'Could not delete enhancement.',
+          message: `Could not delete enhancement: ${error.message}`,
           hasSound: true
         });
       } else {
+        console.log('Successfully deleted enhancement');
         setEnhancements(prev => prev.filter(e => e.id !== id));
         alertHook.showAlert({
           type: 'info',
@@ -185,13 +228,17 @@ export const UnifiedChatInterface = ({ conversationId }: UnifiedChatInterfacePro
         });
       }
     } catch (err) {
-      console.error('Error deleting enhancement:', err);
+      console.error('Unexpected error deleting enhancement:', err);
     }
   };
 
   const loadEnhancementToEditor = (enhancement: Enhancement) => {
     setOriginalPrompt(enhancement.original_prompt);
     setEnhancedPrompt(enhancement.enhanced_prompt);
+  };
+
+  const refreshHistory = () => {
+    loadEnhancements();
   };
 
   return (
@@ -205,8 +252,8 @@ export const UnifiedChatInterface = ({ conversationId }: UnifiedChatInterfacePro
                 <span>📚</span>
                 <span>Enhancement History</span>
               </div>
-              <Button onClick={() => navigate('/chat')} className="text-xs">
-                🔄 Refresh
+              <Button onClick={refreshHistory} className="text-xs" disabled={loadingHistory}>
+                {loadingHistory ? '⏳' : '🔄'} Refresh
               </Button>
             </div>
           </TitleBar>
@@ -242,9 +289,17 @@ export const UnifiedChatInterface = ({ conversationId }: UnifiedChatInterfacePro
                 <div className="text-4xl mb-2">📁</div>
                 <p className="text-sm text-gray-600">No enhancements yet</p>
                 <p className="text-xs text-gray-500 mt-2">Start enhancing prompts to see history here!</p>
+                {user && (
+                  <div className="mt-3 text-xs text-blue-600">
+                    User ID: {user.id.slice(0, 8)}...
+                  </div>
+                )}
               </div>
             ) : (
               <div className="space-y-2">
+                <div className="text-xs text-gray-500 mb-2 text-center">
+                  {enhancements.length} enhancement{enhancements.length !== 1 ? 's' : ''} found
+                </div>
                 {enhancements.map((enhancement) => (
                   <div
                     key={enhancement.id}
