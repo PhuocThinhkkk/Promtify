@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Frame, TitleBar, Button, Input, Fieldset, TextArea } from '@react95/core';
+import { Frame, TitleBar, Button, TextArea } from '@react95/core';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +11,7 @@ interface Enhancement {
   id: string;
   original_prompt: string;
   enhanced_prompt: string;
+  provider: string;
   created_at: string;
 }
 
@@ -23,39 +24,77 @@ export const UnifiedChatInterface = ({ conversationId }: UnifiedChatInterfacePro
   const [originalPrompt, setOriginalPrompt] = useState('');
   const [enhancedPrompt, setEnhancedPrompt] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showEnhancer, setShowEnhancer] = useState(true);
+  const [loadingHistory, setLoadingHistory] = useState(true);
   const { user } = useAuth();
   const navigate = useNavigate();
   const { enhancePrompt, loading: enhancerLoading, error } = usePromptEnhancer();
   const alertHook = useAlert();
 
   useEffect(() => {
-    loadEnhancements();
-  }, []);
+    if (user) {
+      loadEnhancements();
+    }
+  }, [user]);
 
   const loadEnhancements = async () => {
     if (!user) return;
 
-    // For now, we'll store enhancements in localStorage since we don't have a dedicated table
-    const stored = localStorage.getItem(`enhancements_${user.id}`);
-    if (stored) {
-      setEnhancements(JSON.parse(stored));
+    setLoadingHistory(true);
+    try {
+      const { data, error } = await supabase
+        .from('prompt_enhancements')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error loading enhancements:', error);
+        alertHook.showAlert({
+          type: 'error',
+          title: 'Database Error',
+          message: 'Could not load enhancement history. Please try again.',
+          hasSound: true
+        });
+      } else {
+        setEnhancements(data || []);
+      }
+    } catch (err) {
+      console.error('Error loading enhancements:', err);
+    } finally {
+      setLoadingHistory(false);
     }
   };
 
-  const saveEnhancement = (original: string, enhanced: string) => {
+  const saveEnhancement = async (original: string, enhanced: string, provider: string) => {
     if (!user) return;
 
-    const newEnhancement: Enhancement = {
-      id: Date.now().toString(),
-      original_prompt: original,
-      enhanced_prompt: enhanced,
-      created_at: new Date().toISOString(),
-    };
+    try {
+      const { data, error } = await supabase
+        .from('prompt_enhancements')
+        .insert({
+          user_id: user.id,
+          original_prompt: original,
+          enhanced_prompt: enhanced,
+          provider: provider
+        })
+        .select()
+        .single();
 
-    const updated = [newEnhancement, ...enhancements];
-    setEnhancements(updated);
-    localStorage.setItem(`enhancements_${user.id}`, JSON.stringify(updated));
+      if (error) {
+        console.error('Error saving enhancement:', error);
+        alertHook.showAlert({
+          type: 'error',
+          title: 'Save Error',
+          message: 'Could not save enhancement to history.',
+          hasSound: true
+        });
+      } else {
+        // Add to local state
+        setEnhancements(prev => [data, ...prev]);
+      }
+    } catch (err) {
+      console.error('Error saving enhancement:', err);
+    }
   };
 
   const handleEnhance = async () => {
@@ -74,7 +113,7 @@ export const UnifiedChatInterface = ({ conversationId }: UnifiedChatInterfacePro
     
     if (result) {
       setEnhancedPrompt(result.enhanced_prompt);
-      saveEnhancement(originalPrompt, result.enhanced_prompt);
+      await saveEnhancement(originalPrompt, result.enhanced_prompt, result.provider || 'Google Gemini 1.5 Flash');
       alertHook.showAlert({
         type: 'info',
         title: 'Success!',
@@ -118,12 +157,36 @@ export const UnifiedChatInterface = ({ conversationId }: UnifiedChatInterfacePro
     setEnhancedPrompt('');
   };
 
-  const deleteEnhancement = (id: string) => {
+  const deleteEnhancement = async (id: string) => {
     if (!user) return;
     
-    const updated = enhancements.filter(e => e.id !== id);
-    setEnhancements(updated);
-    localStorage.setItem(`enhancements_${user.id}`, JSON.stringify(updated));
+    try {
+      const { error } = await supabase
+        .from('prompt_enhancements')
+        .delete()
+        .eq('id', id)
+        .eq('user_id', user.id);
+
+      if (error) {
+        console.error('Error deleting enhancement:', error);
+        alertHook.showAlert({
+          type: 'error',
+          title: 'Delete Error',
+          message: 'Could not delete enhancement.',
+          hasSound: true
+        });
+      } else {
+        setEnhancements(prev => prev.filter(e => e.id !== id));
+        alertHook.showAlert({
+          type: 'info',
+          title: 'Deleted!',
+          message: 'Enhancement removed from history.',
+          hasSound: true
+        });
+      }
+    } catch (err) {
+      console.error('Error deleting enhancement:', err);
+    }
   };
 
   const loadEnhancementToEditor = (enhancement: Enhancement) => {
@@ -143,7 +206,7 @@ export const UnifiedChatInterface = ({ conversationId }: UnifiedChatInterfacePro
                 <span>Enhancement History</span>
               </div>
               <Button onClick={() => navigate('/chat')} className="text-xs">
-                💬 Chat
+                🔄 Refresh
               </Button>
             </div>
           </TitleBar>
@@ -169,7 +232,12 @@ export const UnifiedChatInterface = ({ conversationId }: UnifiedChatInterfacePro
           </div>
 
           <div className="flex-1 overflow-y-auto p-2 bg-white">
-            {enhancements.length === 0 ? (
+            {loadingHistory ? (
+              <div className="text-center p-4">
+                <div className="text-4xl mb-2">⏳</div>
+                <p className="text-sm text-gray-600">Loading history...</p>
+              </div>
+            ) : enhancements.length === 0 ? (
               <div className="text-center p-4">
                 <div className="text-4xl mb-2">📁</div>
                 <p className="text-sm text-gray-600">No enhancements yet</p>
@@ -193,6 +261,9 @@ export const UnifiedChatInterface = ({ conversationId }: UnifiedChatInterfacePro
                         </p>
                         <p className="text-xs text-green-700 truncate">
                           ✨ {enhancement.enhanced_prompt.slice(0, 50)}...
+                        </p>
+                        <p className="text-xs text-blue-600 mt-1">
+                          🤖 {enhancement.provider}
                         </p>
                       </div>
                       <Button
@@ -235,13 +306,11 @@ export const UnifiedChatInterface = ({ conversationId }: UnifiedChatInterfacePro
               </div>
             ) : (
               <div className="space-y-4">
-                <Fieldset legend="🎯 Your Enhanced (Actually Good) Prompt">
-                  <TextArea
-                    value={enhancedPrompt}
-                    readOnly
-                    rows={12}
-                    className="w-full font-mono text-sm bg-green-50"
-                  />
+                <div className="border-2 border-green-300 bg-green-50 p-4 rounded">
+                  <h4 className="font-bold text-green-800 mb-2">🎯 Your Enhanced (Actually Good) Prompt:</h4>
+                  <div className="bg-white p-3 border border-green-200 rounded font-mono text-sm whitespace-pre-wrap">
+                    {enhancedPrompt}
+                  </div>
                   <div className="mt-3 flex gap-2 justify-end">
                     <Button onClick={handleCopyToClipboard}>
                       📋 Copy Enhanced
@@ -250,7 +319,7 @@ export const UnifiedChatInterface = ({ conversationId }: UnifiedChatInterfacePro
                       🗑️ Clear All
                     </Button>
                   </div>
-                </Fieldset>
+                </div>
               </div>
             )}
           </div>
